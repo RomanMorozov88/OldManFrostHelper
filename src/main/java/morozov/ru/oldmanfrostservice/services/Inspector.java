@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Некий инспектор, иногда посещающий склад и проверяющий что там как по подаркам.
- * В случае необходимости формирует заказы на недостоющее до максимально значения кол-во подарков
+ * В случае необходимости формирует заказы на недостоющее до максимального значения кол-во подарков
  * и отправляет их на фабрику.
  */
 @Component
@@ -52,6 +52,11 @@ public class Inspector {
 
     }
 
+    /**
+     * Получает кол-во подарков каждого типа.
+     * @param types
+     * @return
+     */
     private List<GiftOrder> runOverTypes(List<GiftType> types) {
         List<GiftOrder> result = new ArrayList<>();
         GiftOrder bufferOrder = null;
@@ -64,6 +69,12 @@ public class Inspector {
         return result;
     }
 
+    /**
+     * Сверяет кол-во подарков на складе с заданым количеством,
+     * ниже которого не должно быть ниже.
+     * @param giftOrder
+     * @return null-если всё норм и подарков в достатке.
+     */
     private GiftOrder controlCount(GiftOrder giftOrder) {
         GiftOrder result = null;
         Integer bufferCount = giftOrder.getCount();

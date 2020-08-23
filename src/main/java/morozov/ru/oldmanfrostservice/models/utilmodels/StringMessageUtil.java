@@ -1,7 +1,5 @@
 package morozov.ru.oldmanfrostservice.models.utilmodels;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 public class StringMessageUtil implements MessageUtil<String> {
 
     private String msg;

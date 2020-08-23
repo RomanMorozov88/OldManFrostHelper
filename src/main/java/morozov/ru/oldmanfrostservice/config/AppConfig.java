@@ -2,9 +2,11 @@ package morozov.ru.oldmanfrostservice.config;
 
 import morozov.ru.oldmanfrostservice.repositories.DoneListImpl;
 import morozov.ru.oldmanfrostservice.repositories.GiftTypeRepoImpl;
+import morozov.ru.oldmanfrostservice.repositories.WaitingListRepoImpl;
 import morozov.ru.oldmanfrostservice.repositories.WarehouseImpl;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.DoneListRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.GiftTypeRepo;
+import morozov.ru.oldmanfrostservice.repositories.interfaces.WaitingListRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.WarehouseRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Random;
 import java.util.concurrent.Executor;
 
 @EnableScheduling
@@ -36,8 +39,18 @@ public class AppConfig {
     }
 
     @Bean
+    public WaitingListRepo waitingListRepo() {
+        return new WaitingListRepoImpl();
+    }
+
+    @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public Random random() {
+        return new Random();
     }
 
 }
