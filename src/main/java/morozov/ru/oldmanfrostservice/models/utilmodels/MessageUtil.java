@@ -5,5 +5,7 @@ package morozov.ru.oldmanfrostservice.models.utilmodels;
  * @param <T>
  */
 public interface MessageUtil<T> {
-    public void setData(T input);
+    void setData(T input);
+    T getData();
+
 }

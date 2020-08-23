@@ -44,7 +44,7 @@ public class DataInit {
     }
 
     private void setGifts(GiftType giftType) {
-        for (int i = 1; i <= this.countQ; i++) {
+        for (int i = 1; i <= this.countQ - 2; i++) {
             Gift buffer = new Gift();
             buffer.setType(giftType);
             buffer.setName(buffer.getType().getType() + i);
