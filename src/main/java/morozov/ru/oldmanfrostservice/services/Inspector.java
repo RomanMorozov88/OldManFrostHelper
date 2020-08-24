@@ -5,6 +5,8 @@ import morozov.ru.oldmanfrostservice.models.utilmodels.GiftOrder;
 import morozov.ru.oldmanfrostservice.models.utilmodels.StringMessageUtil;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.GiftTypeRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.WarehouseRepo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,12 +24,16 @@ import java.util.List;
 @Component
 public class Inspector {
 
+    private static final Logger LOG = LogManager.getLogger(Inspector.class);
+
     @Value("${q.count}")
     private int countQ;
     @Value("${q.criterion}")
     private int criterionQ;
+    @Value("${general.uri}")
+    private String generalUri;
     @Value("${factory.uri}")
-    private String uri;
+    private String factoryUri;
     @Autowired
     private GiftTypeRepo giftTypeRepo;
     @Autowired
@@ -46,8 +52,9 @@ public class Inspector {
         List<GiftType> types = this.giftTypeRepo.getAllTypes();
         List<GiftOrder> orders = this.runOverTypes(types);
         if (orders.size() > 0) {
+            String uri = generalUri + factoryUri;
             StringMessageUtil msg = this.restTemplate.postForObject(uri, orders, StringMessageUtil.class);
-            //DO LOGGER HERE
+            LOG.info(msg.getData());
         }
 
     }

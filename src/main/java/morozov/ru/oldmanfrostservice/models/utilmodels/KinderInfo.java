@@ -3,7 +3,7 @@ package morozov.ru.oldmanfrostservice.models.utilmodels;
 public class KinderInfo {
 
     private String kinderName;
-    private boolean isGood;
+    private Boolean isGood;
 
     public KinderInfo() {
     }
@@ -16,11 +16,11 @@ public class KinderInfo {
         this.kinderName = kinderName;
     }
 
-    public boolean isGood() {
+    public Boolean isGood() {
         return isGood;
     }
 
-    public void setGood(boolean good) {
+    public void setGood(Boolean good) {
         this.isGood = good;
     }
 }

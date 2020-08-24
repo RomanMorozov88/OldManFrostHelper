@@ -3,6 +3,8 @@ package morozov.ru.factoryservice.controls;
 import morozov.ru.factoryservice.factoryutil.ProductionLine;
 import morozov.ru.oldmanfrostservice.models.utilmodels.GiftOrder;
 import morozov.ru.oldmanfrostservice.models.utilmodels.StringMessageUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -21,17 +23,23 @@ import java.util.List;
 @RestController
 public class OrderControl {
 
+    private static final Logger LOG = LogManager.getLogger(OrderControl.class);
+
     @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Autowired
     private RestTemplate restTemplate;
+    @Value("${general.uri}")
+    private String generalUri;
     @Value("${frost.uri}")
     private String frostUri;
 
     @PostMapping("/factory/order")
     public StringMessageUtil acceptOrder(@RequestBody List<GiftOrder> orders) {
+        LOG.info("We got new order.");
+        String uri = generalUri + frostUri;
         for (GiftOrder o : orders) {
-            threadPoolTaskExecutor.execute(new ProductionLine(o, restTemplate, frostUri));
+            threadPoolTaskExecutor.execute(new ProductionLine(o, restTemplate, uri));
         }
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("ACCEPT");
