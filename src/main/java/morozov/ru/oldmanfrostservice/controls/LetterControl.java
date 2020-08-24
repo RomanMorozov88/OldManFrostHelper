@@ -53,15 +53,18 @@ public class LetterControl {
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData(letter.getKinderName());
         String completeUri = generalUri + kinderUri;
-        KinderInfo info = this.restTemplate.postForObject(completeUri, msg, KinderInfo.class);
-        LOG.info("We received and check information about " + info.getKinderName());
-        boolean flag = this.letterControlUtil.browsingKinderInfo(info, neededGiftType, response);
         NoteOfDone result = null;
-        if (flag) {
-            LOG.info("ALL IS OK with flag: " + flag);
-            result = this.letterControlUtil.formingGift(info.getKinderName(), neededGiftType, response);
-        } else {
-            LOG.info("ALL IS NOT OK with flag: " + flag);
+        KinderInfo info = this.restTemplate.postForObject(completeUri, msg, KinderInfo.class);
+        if (info != null) {
+            LOG.info("We received and check information about " + info.getKinderName());
+            boolean flag = this.letterControlUtil.browsingKinderInfo(info, neededGiftType, response);
+            if (flag) {
+                LOG.info("ALL IS OK with flag: " + flag);
+                result = this.letterControlUtil
+                        .formingGiftForLetterControl(info.getKinderName(), neededGiftType, response);
+            } else {
+                LOG.info("ALL IS NOT OK with flag: " + flag);
+            }
         }
         return result;
     }

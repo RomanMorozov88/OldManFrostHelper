@@ -10,16 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Просто приниает список и делает вид, что рассылает подврки.
+ */
 @RestController
 public class OfficeControl {
 
     private static final Logger LOG = LogManager.getLogger(OfficeControl.class);
 
-    @PostMapping
+    @PostMapping("office/send")
     public StringMessageUtil takeGifts(@RequestBody List<NoteOfDone> list) {
         LOG.info("Got list for delivery.");
         for (NoteOfDone n : list) {
-            LOG.info(n.getKinderName() + " : " + n.getGift().getName());
+            LOG.info("Sending to: " + n.getKinderName() + " : " + n.getGift().getName());
         }
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("Will be delivered!");

@@ -9,4 +9,6 @@ public interface WaitingListRepo {
     NoteOfWaiting save(NoteOfWaiting input);
 
     List<NoteOfWaiting> getAll();
+
+    void delete(NoteOfWaiting input);
 }

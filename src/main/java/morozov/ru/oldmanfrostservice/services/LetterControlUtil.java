@@ -81,7 +81,7 @@ public class LetterControlUtil {
         boolean result = true;
         if (info != null) {
             LOG.info("So, was the kid good? " + info.isGood());
-            if (!info.isGood() || info.isGood() == null) {
+            if (info.isGood() == null || !info.isGood()) {
                 result = false;
                 this.redirectMsg.accept(response, badUri);
             } else if (neededGiftType == null) {
@@ -95,7 +95,7 @@ public class LetterControlUtil {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public NoteOfDone formingGift(
+    public NoteOfDone formingGiftForLetterControl(
             String kinderName,
             GiftType neededGiftType,
             HttpServletResponse response
