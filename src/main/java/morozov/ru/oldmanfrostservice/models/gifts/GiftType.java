@@ -8,17 +8,18 @@ import java.util.Objects;
 public class GiftType {
 
     @Id
-    private String type;
+    @Column(name = "type")
+    private String typeName;
 
     public GiftType() {
     }
 
-    public String getType() {
-        return type;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     @Override
@@ -26,11 +27,11 @@ public class GiftType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftType giftType = (GiftType) o;
-        return Objects.equals(type, giftType.type);
+        return Objects.equals(typeName, giftType.typeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type);
+        return Objects.hash(typeName);
     }
 }

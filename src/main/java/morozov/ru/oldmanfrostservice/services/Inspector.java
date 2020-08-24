@@ -34,14 +34,16 @@ public class Inspector {
     private String generalUri;
     @Value("${factory.uri}")
     private String factoryUri;
-    @Autowired
+
     private GiftTypeRepo giftTypeRepo;
-    @Autowired
     private WarehouseRepo warehouseRepo;
-    @Autowired
     private RestTemplate restTemplate;
 
-    public Inspector() {
+    @Autowired
+    public Inspector(GiftTypeRepo giftTypeRepo, WarehouseRepo warehouseRepo, RestTemplate restTemplate) {
+        this.giftTypeRepo = giftTypeRepo;
+        this.warehouseRepo = warehouseRepo;
+        this.restTemplate = restTemplate;
     }
 
     @Scheduled(
@@ -61,6 +63,7 @@ public class Inspector {
 
     /**
      * Получает кол-во подарков каждого типа.
+     *
      * @param types
      * @return
      */
@@ -68,7 +71,7 @@ public class Inspector {
         List<GiftOrder> result = new ArrayList<>();
         GiftOrder bufferOrder = null;
         for (GiftType t : types) {
-            bufferOrder = this.controlCount(this.warehouseRepo.getGiftTypeCount(t.getType()));
+            bufferOrder = this.controlCount(this.warehouseRepo.getGiftTypeCount(t.getTypeName()));
             if (bufferOrder != null) {
                 result.add(bufferOrder);
             }
@@ -79,12 +82,14 @@ public class Inspector {
     /**
      * Сверяет кол-во подарков на складе с заданым количеством,
      * ниже которого не должно быть ниже.
+     *
      * @param giftOrder
      * @return null-если всё норм и подарков в достатке.
      */
     private GiftOrder controlCount(GiftOrder giftOrder) {
         GiftOrder result = null;
         Integer bufferCount = giftOrder.getCount();
+        LOG.info("Inspection of: " + giftOrder.getType().getTypeName() + " : " + bufferCount);
         if (bufferCount < countQ) {
             bufferCount = (countQ * criterionQ) - bufferCount;
             giftOrder.setCount(bufferCount);

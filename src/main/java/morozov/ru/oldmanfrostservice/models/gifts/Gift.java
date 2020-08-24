@@ -1,5 +1,6 @@
 package morozov.ru.oldmanfrostservice.models.gifts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import morozov.ru.oldmanfrostservice.models.notes.NoteOfDone;
 
@@ -18,7 +19,8 @@ public class Gift {
     @JoinColumn(name = "type")
     @NotNull
     private GiftType type;
-    @OneToOne(mappedBy = "gift", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "gift")
     private NoteOfDone owner;
 
     public Gift() {

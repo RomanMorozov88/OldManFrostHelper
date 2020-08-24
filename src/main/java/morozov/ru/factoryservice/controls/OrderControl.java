@@ -25,14 +25,18 @@ public class OrderControl {
 
     private static final Logger LOG = LogManager.getLogger(OrderControl.class);
 
-    @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
-    @Autowired
     private RestTemplate restTemplate;
     @Value("${general.uri}")
     private String generalUri;
     @Value("${frost.uri}")
     private String frostUri;
+
+    @Autowired
+    public OrderControl(ThreadPoolTaskExecutor threadPoolTaskExecutor, RestTemplate restTemplate) {
+        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.restTemplate = restTemplate;
+    }
 
     @PostMapping("/factory/order")
     public StringMessageUtil acceptOrder(@RequestBody List<GiftOrder> orders) {

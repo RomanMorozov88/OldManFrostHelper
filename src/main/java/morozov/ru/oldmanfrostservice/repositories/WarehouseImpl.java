@@ -24,7 +24,7 @@ public class WarehouseImpl implements WarehouseRepo {
     @Override
     public Gift getGift(GiftType type) {
         TypedQuery<Gift> query = this.entityManager
-                .createQuery("select g from Gift g where g.type = :param ", Gift.class);
+                .createQuery("select g from Gift g where g.type = :param and g.owner is empty", Gift.class);
         query.setParameter("param", type);
         return query
                 .getResultList()
@@ -57,7 +57,7 @@ public class WarehouseImpl implements WarehouseRepo {
         GiftOrderWrapper result = this.entityManager
                 .createQuery(
                         "select new morozov.ru.oldmanfrostservice.models.utilmodels.GiftOrderWrapper(t, count(g)) "
-                                + "from Gift g join g.type t where t.type = :param and g.owner is empty ",
+                                + "from Gift g join g.type t where t.typeName = :param and g.owner is empty ",
                         GiftOrderWrapper.class
                 )
                 .setParameter("param", type)

@@ -15,8 +15,8 @@ public class NoteOfDone implements NoteBasic {
     @Column(name = "kinder_name")
     @NotNull
     private String kinderName;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "gift", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(referencedColumnName = "id")
     @NotNull
     private Gift gift;
 

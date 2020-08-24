@@ -4,7 +4,6 @@ import morozov.ru.oldmanfrostservice.models.gifts.Gift;
 import morozov.ru.oldmanfrostservice.models.utilmodels.GiftOrder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -25,7 +24,6 @@ public class ProductionLine implements Runnable {
     private String frostUri;
     private GiftOrder order;
 
-    @Autowired
     public ProductionLine() {
     }
 
@@ -42,7 +40,7 @@ public class ProductionLine implements Runnable {
             try {
                 Gift gift = new Gift();
                 gift.setType(order.getType());
-                gift.setName(i + " " + order.getType().getType());
+                gift.setName(i + " " + order.getType().getTypeName());
                 gifts.add(gift);
                 LOG.info("creating of " + gift.getName());
                 Thread.sleep(5000);
@@ -50,7 +48,7 @@ public class ProductionLine implements Runnable {
                 e.printStackTrace();
             }
         }
-        LOG.info(order.getType().getType() + " order done.");
+        LOG.info(order.getType().getTypeName() + " order done.");
         this.restTemplate.postForLocation(frostUri, gifts);
     }
 }

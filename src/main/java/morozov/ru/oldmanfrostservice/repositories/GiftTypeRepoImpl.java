@@ -25,7 +25,7 @@ public class GiftTypeRepoImpl implements GiftTypeRepo {
     @Override
     public GiftType getType(String typeName) {
         TypedQuery<GiftType> query = this.entityManager
-                .createQuery("select gt from GiftType gt where gt.type = :param ", GiftType.class);
+                .createQuery("select gt from GiftType gt where gt.typeName = :param ", GiftType.class);
         return query
                 .setParameter("param", typeName)
                 .getResultList()
@@ -44,7 +44,7 @@ public class GiftTypeRepoImpl implements GiftTypeRepo {
     @Override
     public Boolean isPresent(String type) {
         TypedQuery<Boolean> query = entityManager.createQuery(
-                "select (count (t) > 0) from GiftType t where t.type = :param", Boolean.class)
+                "select (count (t) > 0) from GiftType t where t.typeName = :param", Boolean.class)
                 .setParameter("param", type);
         return query
                 .getSingleResult();

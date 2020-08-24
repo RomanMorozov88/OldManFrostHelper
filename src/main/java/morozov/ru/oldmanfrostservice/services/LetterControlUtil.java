@@ -13,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.function.BiConsumer;
 
 /**
@@ -36,12 +38,31 @@ public class LetterControlUtil {
     @Value("${frost.unknown}")
     private String unknownUri;
 
-    @Autowired
     private WarehouseRepo warehouseRepo;
-    @Autowired
     private DoneListRepo doneListRepo;
-    @Autowired
     private WaitingListRepo waitingListRepo;
+
+    @Autowired
+    public LetterControlUtil(WarehouseRepo warehouseRepo, DoneListRepo doneListRepo, WaitingListRepo waitingListRepo) {
+        this.warehouseRepo = warehouseRepo;
+        this.doneListRepo = doneListRepo;
+        this.waitingListRepo = waitingListRepo;
+    }
+
+    /**
+     * Редиректим по мере необходимости.
+     *
+     *
+     * @param response
+     */
+    private BiConsumer<HttpServletResponse, String> redirectMsg = (response, uri) -> {
+        try {
+            response.sendRedirect(uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Error in LetterControl:", e);
+        }
+    };
 
     /**
      * Проверяем полученную информацию- смотрим поведение, наличие нужного типа подарка
@@ -55,18 +76,17 @@ public class LetterControlUtil {
     public boolean browsingKinderInfo(
             KinderInfo info,
             GiftType neededGiftType,
-            HttpServletResponse response,
-            BiConsumer<HttpServletResponse, String> biConsumer
+            HttpServletResponse response
     ) {
         boolean result = true;
-        LOG.info("So, was the kid good? " + info.isGood());
         if (info != null) {
+            LOG.info("So, was the kid good? " + info.isGood());
             if (!info.isGood() || info.isGood() == null) {
                 result = false;
-                biConsumer.accept(response, badUri);
+                this.redirectMsg.accept(response, badUri);
             } else if (neededGiftType == null) {
                 result = false;
-                biConsumer.accept(response, unknownUri);
+                this.redirectMsg.accept(response, unknownUri);
             }
         } else {
             LOG.error("Something is wrong with info.");
@@ -74,11 +94,11 @@ public class LetterControlUtil {
         return result;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public NoteOfDone formingGift(
             String kinderName,
             GiftType neededGiftType,
-            HttpServletResponse response,
-            BiConsumer<HttpServletResponse, String> biConsumer
+            HttpServletResponse response
     ) {
         NoteOfDone result = null;
         Gift gift = this.warehouseRepo.getGift(neededGiftType);
@@ -92,7 +112,7 @@ public class LetterControlUtil {
             waiting.setKinderName(kinderName);
             waiting.setType(neededGiftType);
             this.waitingListRepo.save(waiting);
-            biConsumer.accept(response, waitUri);
+            this.redirectMsg.accept(response, waitUri);
         }
         return result;
     }

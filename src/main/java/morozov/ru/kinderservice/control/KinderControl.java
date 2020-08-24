@@ -16,8 +16,12 @@ public class KinderControl {
 
     private static final Logger LOG = LogManager.getLogger(KinderControl.class);
 
+    private Random random;
+
     @Autowired
-    Random random;
+    public KinderControl(Random random) {
+        this.random = random;
+    }
 
     @PostMapping("kinder/about")
     public KinderInfo getKinderInfo(@RequestBody StringMessageUtil msg) {

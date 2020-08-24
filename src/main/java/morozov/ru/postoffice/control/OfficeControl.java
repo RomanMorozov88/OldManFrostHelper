@@ -18,6 +18,9 @@ public class OfficeControl {
     @PostMapping
     public StringMessageUtil takeGifts(@RequestBody List<NoteOfDone> list) {
         LOG.info("Got list for delivery.");
+        for (NoteOfDone n : list) {
+            LOG.info(n.getKinderName() + " : " + n.getGift().getName());
+        }
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("Will be delivered!");
         return msg;

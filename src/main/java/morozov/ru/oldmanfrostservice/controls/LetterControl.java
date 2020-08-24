@@ -5,14 +5,10 @@ import morozov.ru.oldmanfrostservice.models.notes.NoteOfDone;
 import morozov.ru.oldmanfrostservice.models.utilmodels.KinderInfo;
 import morozov.ru.oldmanfrostservice.models.utilmodels.Letter;
 import morozov.ru.oldmanfrostservice.models.utilmodels.StringMessageUtil;
-import morozov.ru.oldmanfrostservice.repositories.interfaces.DoneListRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.GiftTypeRepo;
-import morozov.ru.oldmanfrostservice.repositories.interfaces.WaitingListRepo;
-import morozov.ru.oldmanfrostservice.repositories.interfaces.WarehouseRepo;
 import morozov.ru.oldmanfrostservice.services.LetterControlUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.function.BiConsumer;
 
+/**
+ * Контроллер, отвечающий за обработку писем.
+ * Тут лежит важная часть с логикой:
+ * morozov.ru.oldmanfrostservice.services.LetterControlUtil
+ */
 @RestController
 public class LetterControl {
 
@@ -33,18 +32,20 @@ public class LetterControl {
     private String generalUri;
     @Value("${kinder.uri}")
     private String kinderUri;
-    @Autowired
+
     private RestTemplate restTemplate;
-    @Autowired
-    private WarehouseRepo warehouseRepo;
-    @Autowired
-    private DoneListRepo doneListRepo;
-    @Autowired
-    private WaitingListRepo waitingListRepo;
-    @Autowired
     private GiftTypeRepo giftTypeRepo;
-    @Autowired
     private LetterControlUtil letterControlUtil;
+
+    public LetterControl(
+            RestTemplate restTemplate,
+            GiftTypeRepo giftTypeRepo,
+            LetterControlUtil letterControlUtil
+    ) {
+        this.restTemplate = restTemplate;
+        this.giftTypeRepo = giftTypeRepo;
+        this.letterControlUtil = letterControlUtil;
+    }
 
     @PostMapping("/frost/letter")
     public NoteOfDone takeLetter(@RequestBody Letter letter, HttpServletResponse response) {
@@ -54,10 +55,11 @@ public class LetterControl {
         String completeUri = generalUri + kinderUri;
         KinderInfo info = this.restTemplate.postForObject(completeUri, msg, KinderInfo.class);
         LOG.info("We received and check information about " + info.getKinderName());
-        boolean flag = this.letterControlUtil.browsingKinderInfo(info, neededGiftType, response, this.redirectMsg);
+        boolean flag = this.letterControlUtil.browsingKinderInfo(info, neededGiftType, response);
         NoteOfDone result = null;
         if (flag) {
             LOG.info("ALL IS OK with flag: " + flag);
+            result = this.letterControlUtil.formingGift(info.getKinderName(), neededGiftType, response);
         } else {
             LOG.info("ALL IS NOT OK with flag: " + flag);
         }
@@ -85,21 +87,5 @@ public class LetterControl {
                 + "We will send this one in a year, as soon as we set up production.");
         return msg;
     }
-
-    /**
-     * Редиректим по мере необходимости.
-     *
-     * @param response
-     * @param uri
-     */
-    private BiConsumer<HttpServletResponse, String> redirectMsg = (response, uri) -> {
-        try {
-            response.sendRedirect(uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("Error in LetterControl:", e);
-        }
-    };
-
 
 }
