@@ -58,18 +58,31 @@
 Инспектор формирует (при необходимости) заказы для фабрики.
 
 Запросы: POST /frost/letter Приниает:  
-{ name : String type : String }  
+{  
+name : String,  
+middleName : String,  
+lastName : String,   
+type : String  
+}  
 Возвращает: При успехе:  
-{ NoteOfDone }  
+{  
+NoteOfDone  
+}  
 При плохом поведении:  
 (редирект на frost/bad)  
-{ StringMessageUtil }  
+{  
+StringMessageUtil  
+}  
 При отстутствии подарка на складе:  
 (редирект на frost/wait)  
 (И создаёт запись в таблице с ожидающими(NoteOfWaiting))  
-{ StringMessageUtil }  
+{  
+StringMessageUtil  
+}  
 При отсутствии нужного типа подарка:  
 (редирект на frost/unknown)  
-{ StringMessageUtil }  
+{  
+StringMessageUtil  
+}  
   
  GET /frost/exit Просто на всякий случай- выключение приложения.

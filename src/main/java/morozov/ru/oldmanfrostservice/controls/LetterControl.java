@@ -1,8 +1,8 @@
 package morozov.ru.oldmanfrostservice.controls;
 
 import morozov.ru.oldmanfrostservice.models.gifts.GiftType;
+import morozov.ru.oldmanfrostservice.models.notes.NoteBasic;
 import morozov.ru.oldmanfrostservice.models.notes.NoteOfDone;
-import morozov.ru.oldmanfrostservice.models.utilmodels.KinderInfo;
 import morozov.ru.oldmanfrostservice.models.utilmodels.Letter;
 import morozov.ru.oldmanfrostservice.models.utilmodels.StringMessageUtil;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.GiftTypeRepo;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Контроллер, отвечающий за обработку писем.
@@ -32,6 +33,8 @@ public class LetterControl {
     private String generalUri;
     @Value("${kinder.uri}")
     private String kinderUri;
+    @Value("${frost.wait}")
+    private String waitUri;
 
     private RestTemplate restTemplate;
     private GiftTypeRepo giftTypeRepo;
@@ -50,40 +53,47 @@ public class LetterControl {
     @PostMapping("/frost/letter")
     public NoteOfDone takeLetter(@RequestBody Letter letter, HttpServletResponse response) {
         GiftType neededGiftType = this.giftTypeRepo.getType(letter.getGiftType());
-        StringMessageUtil msg = new StringMessageUtil();
-        msg.setData(letter.getKinderName());
+        NoteBasic info = new NoteBasic(
+                letter.getName(),
+                letter.getMiddleName(),
+                letter.getLastName());
         String completeUri = generalUri + kinderUri;
         NoteOfDone result = null;
-        KinderInfo info = this.restTemplate.postForObject(completeUri, msg, KinderInfo.class);
-        if (info != null) {
-            LOG.info("We received and check information about " + info.getKinderName());
-            boolean flag = this.letterControlUtil.browsingKinderInfo(info, neededGiftType, response);
-            if (flag) {
-                LOG.info("ALL IS OK with flag: " + flag);
-                result = this.letterControlUtil
-                        .formingGiftForLetterControl(info.getKinderName(), neededGiftType, response);
-            } else {
-                LOG.info("ALL IS NOT OK with flag: " + flag);
+        Boolean isGood = this.restTemplate.postForObject(completeUri, info, Boolean.class);
+        LOG.info("We received and check information about " + info.getKinderName());
+        boolean flag = this.letterControlUtil.browsingKinderInfo(isGood, info, neededGiftType, response);
+        if (flag) {
+            LOG.info("ALL IS OK with flag: " + flag);
+            result = this.letterControlUtil
+                    .formingGiftForLetterControl(info, neededGiftType);
+            if (result == null) {
+                try {
+                    response.sendRedirect(waitUri);
+                } catch (IOException e) {
+                    LOG.error("Error in LetterControl:", e);
+                }
             }
+        } else {
+            LOG.info("ALL IS NOT OK with flag: " + flag);
         }
         return result;
     }
 
-    @GetMapping("frost/bad")
+    @GetMapping("/frost/bad")
     public StringMessageUtil getNegativeAnswer() {
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("Try to be good next year.");
         return msg;
     }
 
-    @GetMapping("frost/wait")
+    @GetMapping("/frost/wait")
     public StringMessageUtil getWaitAnswer() {
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("Dont be sad, Snow Maiden is looking for your gift.");
         return msg;
     }
 
-    @GetMapping("frost/unknown")
+    @GetMapping("/frost/unknown")
     public StringMessageUtil getUnknownAnswer() {
         StringMessageUtil msg = new StringMessageUtil();
         msg.setData("This is an unknown type of gift. "

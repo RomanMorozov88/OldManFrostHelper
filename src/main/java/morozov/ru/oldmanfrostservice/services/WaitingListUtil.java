@@ -20,6 +20,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Работа со списком ожидающих.
+ */
 @Service
 public class WaitingListUtil {
 
@@ -49,6 +52,10 @@ public class WaitingListUtil {
         this.doneListRepo = doneListRepo;
     }
 
+    /**
+     * Метод для обработки списка ожидающих
+     *  и отправки им их долгожданных подарков.
+     */
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void sendToWaitings() {
         List<NoteOfWaiting> list = this.waitingListRepo.getAll();
@@ -64,6 +71,12 @@ public class WaitingListUtil {
         }
     }
 
+    /**
+     * Обработка ожидающих, создание записей об отправке
+     * и очистка списка ожидающих.
+     * @param list
+     * @return
+     */
     private List<NoteOfDone> runOverWaitings(List<NoteOfWaiting> list) {
         List<NoteOfDone> sendingList = new ArrayList<>();
         String kinderName = null;
@@ -72,6 +85,7 @@ public class WaitingListUtil {
             for (NoteOfWaiting n : list) {
                 kinderName = n.getKinderName();
                 giftType = n.getType();
+                LOG.info("Waiting kid: " + kinderName);
                 Gift gift = this.warehouseRepo.getGift(giftType);
                 if (gift != null) {
                     NoteOfDone noteOfDone = new NoteOfDone();
@@ -82,7 +96,6 @@ public class WaitingListUtil {
                     sendingList.add(noteOfDone);
                 }
             }
-            LOG.info("Waiting kid: " + kinderName);
         }
         return sendingList;
     }

@@ -4,39 +4,18 @@ import com.sun.istack.NotNull;
 import morozov.ru.oldmanfrostservice.models.gifts.Gift;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "done_list")
-public class NoteOfDone implements NoteBasic {
+public class NoteOfDone extends NoteBasic {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(name = "kinder_name")
-    @NotNull
-    private String kinderName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
     @NotNull
     private Gift gift;
 
     public NoteOfDone() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getKinderName() {
-        return kinderName;
-    }
-
-    public void setKinderName(String kinderName) {
-        this.kinderName = kinderName;
     }
 
     public Gift getGift() {
@@ -47,4 +26,17 @@ public class NoteOfDone implements NoteBasic {
         this.gift = gift;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof NoteBasic)) return false;
+        if (!super.equals(o)) return false;
+        NoteOfDone that = (NoteOfDone) o;
+        return Objects.equals(gift, that.gift);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), gift);
+    }
 }
