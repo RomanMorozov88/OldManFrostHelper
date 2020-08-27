@@ -1,6 +1,5 @@
 package morozov.ru.oldmanfrostservice.models.notes;
 
-import com.sun.istack.NotNull;
 import morozov.ru.oldmanfrostservice.models.gifts.Gift;
 
 import javax.persistence.*;

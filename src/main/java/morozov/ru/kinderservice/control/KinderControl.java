@@ -22,10 +22,13 @@ public class KinderControl {
         this.random = random;
     }
 
-    @PostMapping("kinder/about")
+    @PostMapping("/kinder/about")
     public Boolean getKinderInfo(@RequestBody NoteBasic input) {
-        LOG.info("Looking for information about " + input.getKinderName());
-        Boolean isGood = random.nextBoolean();
+        Boolean isGood = null;
+        if (input != null) {
+            LOG.info("Looking for information about " + input.getKinderName());
+            isGood = random.nextBoolean();
+        }
         return isGood;
     }
 

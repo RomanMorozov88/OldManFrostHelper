@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.function.BiConsumer;
 
 /**
  * Контроллер, отвечающий за обработку писем.
@@ -35,6 +36,10 @@ public class LetterControl {
     private String kinderUri;
     @Value("${frost.wait}")
     private String waitUri;
+    @Value("${frost.bad}")
+    private String badUri;
+    @Value("${frost.unknown}")
+    private String unknownUri;
 
     private RestTemplate restTemplate;
     private GiftTypeRepo giftTypeRepo;
@@ -52,7 +57,6 @@ public class LetterControl {
 
     @PostMapping("/frost/letter")
     public NoteOfDone takeLetter(@RequestBody Letter letter, HttpServletResponse response) {
-        GiftType neededGiftType = this.giftTypeRepo.getType(letter.getGiftType());
         NoteBasic info = new NoteBasic(
                 letter.getName(),
                 letter.getMiddleName(),
@@ -61,20 +65,20 @@ public class LetterControl {
         NoteOfDone result = null;
         Boolean isGood = this.restTemplate.postForObject(completeUri, info, Boolean.class);
         LOG.info("We received and check information about " + info.getKinderName());
-        boolean flag = this.letterControlUtil.browsingKinderInfo(isGood, info, neededGiftType, response);
-        if (flag) {
-            LOG.info("ALL IS OK with flag: " + flag);
-            result = this.letterControlUtil
-                    .formingGiftForLetterControl(info, neededGiftType);
-            if (result == null) {
-                try {
-                    response.sendRedirect(waitUri);
-                } catch (IOException e) {
-                    LOG.error("Error in LetterControl:", e);
+        LOG.info("So, was the kid good? " + isGood);
+        if (isGood != null && isGood) {
+            GiftType neededGiftType = this.giftTypeRepo.getType(letter.getGiftType());
+            if (neededGiftType != null) {
+                result = this.letterControlUtil
+                        .formingGiftForLetterControl(info, neededGiftType);
+                if (result == null) {
+                    this.redirectMsg.accept(response, waitUri);
                 }
+            } else {
+                this.redirectMsg.accept(response, unknownUri);
             }
         } else {
-            LOG.info("ALL IS NOT OK with flag: " + flag);
+            this.redirectMsg.accept(response, badUri);
         }
         return result;
     }
@@ -100,5 +104,19 @@ public class LetterControl {
                 + "We will send this one in a year, as soon as we set up production.");
         return msg;
     }
+
+    /**
+     * Редиректим по мере необходимости.
+     *
+     * @param response
+     */
+    private BiConsumer<HttpServletResponse, String> redirectMsg = (response, uri) -> {
+        try {
+            response.sendRedirect(uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Error in LetterControlUtil:", e);
+        }
+    };
 
 }

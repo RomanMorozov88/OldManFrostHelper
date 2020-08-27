@@ -57,12 +57,17 @@
 Инспектор запускается через минуту и проводит проверку склада каждые 5 минут.  
 Инспектор формирует (при необходимости) заказы для фабрики.
 
+frost.jar - исполняемый фаил.
+
+http://localhost:8080/h2-console - H2 БД.
+http://localhost:8080/v2/api-docs - документация запросов от Swagger.
+
 Запросы: POST /frost/letter Приниает:  
 {  
-name : String,  
-middleName : String,  
-lastName : String,   
-type : String  
+"name" : String,  
+"middleName" : String,  
+"lastName" : String,   
+"giftType" : String  
 }  
 Возвращает: При успехе:  
 {  

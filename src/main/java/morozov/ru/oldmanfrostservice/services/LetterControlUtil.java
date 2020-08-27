@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.function.BiConsumer;
 
 /**
@@ -51,20 +49,6 @@ public class LetterControlUtil {
     }
 
     /**
-     * Редиректим по мере необходимости.
-     *
-     * @param response
-     */
-    private BiConsumer<HttpServletResponse, String> redirectMsg = (response, uri) -> {
-        try {
-            response.sendRedirect(uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("Error in LetterControlUtil:", e);
-        }
-    };
-
-    /**
      * Перегоняем входящую информацию о ребёнке в конкретный нужный тип.
      */
     private BiConsumer<NoteBasic, NoteBasic> notesConvert = (result, input) -> {
@@ -74,41 +58,11 @@ public class LetterControlUtil {
     };
 
     /**
-     * Проверяем полученную информацию- смотрим поведение, наличие нужного типа подарка
-     * редиректим в случае необходимости.
-     *
-     * @param info
-     * @param response
-     * @param neededGiftType
-     * @return true- если всё хорошо, и можно отправлять подарок.
-     */
-    public boolean browsingKinderInfo(
-            Boolean isGood,
-            NoteBasic info,
-            GiftType neededGiftType,
-            HttpServletResponse response
-    ) {
-        boolean result = true;
-        if (info != null) {
-            LOG.info("So, was the kid good? " + isGood);
-            if (isGood == null || !isGood) {
-                result = false;
-                this.redirectMsg.accept(response, badUri);
-            } else if (neededGiftType == null) {
-                result = false;
-                this.redirectMsg.accept(response, unknownUri);
-            }
-        } else {
-            LOG.error("Something is wrong with info.");
-        }
-        return result;
-    }
-
-    /**
      * Формируем подарок.
      * В случае успеха возвращаем готовый объект и сохраняем в БД.
      * В случае, если подарка на складе нет- закидываем в списо ожидания
      * и возвращаем null.
+     *
      * @param info
      * @param neededGiftType
      * @return
@@ -121,11 +75,13 @@ public class LetterControlUtil {
         NoteOfDone result = null;
         Gift gift = this.warehouseRepo.getGift(neededGiftType);
         if (gift != null) {
+            LOG.info("Gift is found");
             result = new NoteOfDone();
             this.notesConvert.accept(result, info);
             result.setGift(gift);
             this.doneListRepo.saveNote(result);
         } else {
+            LOG.info("Gift is not found");
             NoteOfWaiting waiting = new NoteOfWaiting();
             this.notesConvert.accept(waiting, info);
             waiting.setType(neededGiftType);
