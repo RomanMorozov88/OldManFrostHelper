@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class WarehouseImpl implements WarehouseRepo {
+public class WarehouseRepoImpl implements WarehouseRepo {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -41,13 +41,7 @@ public class WarehouseImpl implements WarehouseRepo {
     }
 
     @Override
-    public void sendGiftUpdate(Gift gift, NoteOfDone noteOfDone) {
-        gift.setOwner(noteOfDone);
-        this.entityManager.merge(gift);
-    }
-
-    @Override
-    public Gift add(Gift gift) {
+    public Gift saveGift(Gift gift) {
         this.entityManager.persist(gift);
         return gift;
     }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface WaitingListRepo {
 
-    NoteOfWaiting save(NoteOfWaiting input);
+    NoteOfWaiting saveNote(NoteOfWaiting input);
 
     List<NoteOfWaiting> getAll();
 

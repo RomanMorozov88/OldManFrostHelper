@@ -31,7 +31,7 @@ public class WarehouseControlUtil {
     public void loadingGifts(List<Gift> newArrival) {
         for (Gift g : newArrival) {
             LOG.info("Load " + g.getName() + " in the warehouse.");
-            this.warehouseRepo.add(g);
+            this.warehouseRepo.saveGift(g);
         }
     }
 }

@@ -48,7 +48,7 @@ public class DataInit {
             Gift buffer = new Gift();
             buffer.setType(giftType);
             buffer.setName(buffer.getType().getTypeName() + i);
-            this.warehouseRepo.add(buffer);
+            this.warehouseRepo.saveGift(buffer);
         }
     }
 }

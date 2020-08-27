@@ -17,7 +17,7 @@ public class WaitingListRepoImpl implements WaitingListRepo {
     private EntityManager entityManager;
 
     @Override
-    public NoteOfWaiting save(NoteOfWaiting input) {
+    public NoteOfWaiting saveNote(NoteOfWaiting input) {
         this.entityManager.persist(input);
         return input;
     }

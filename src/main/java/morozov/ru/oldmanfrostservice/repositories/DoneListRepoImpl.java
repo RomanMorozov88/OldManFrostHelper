@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class DoneListImpl implements DoneListRepo {
+public class DoneListRepoImpl implements DoneListRepo {
 
     @PersistenceContext
     private EntityManager entityManager;

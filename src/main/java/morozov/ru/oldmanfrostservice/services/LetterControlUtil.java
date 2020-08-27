@@ -129,7 +129,7 @@ public class LetterControlUtil {
             NoteOfWaiting waiting = new NoteOfWaiting();
             this.notesConvert.accept(waiting, info);
             waiting.setType(neededGiftType);
-            this.waitingListRepo.save(waiting);
+            this.waitingListRepo.saveNote(waiting);
         }
         return result;
     }

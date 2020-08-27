@@ -1,7 +1,6 @@
 package morozov.ru.oldmanfrostservice.models.gifts;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.istack.NotNull;
 import morozov.ru.oldmanfrostservice.models.notes.NoteOfDone;
 
 import javax.persistence.*;
@@ -13,11 +12,10 @@ public class Gift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotNull
+    @Column(nullable = false)
     private String name;
     @ManyToOne
-    @JoinColumn(name = "type")
-    @NotNull
+    @JoinColumn(name = "type", nullable = false)
     private GiftType type;
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "gift")

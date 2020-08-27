@@ -1,9 +1,9 @@
 package morozov.ru.oldmanfrostservice.config;
 
-import morozov.ru.oldmanfrostservice.repositories.DoneListImpl;
+import morozov.ru.oldmanfrostservice.repositories.DoneListRepoImpl;
 import morozov.ru.oldmanfrostservice.repositories.GiftTypeRepoImpl;
 import morozov.ru.oldmanfrostservice.repositories.WaitingListRepoImpl;
-import morozov.ru.oldmanfrostservice.repositories.WarehouseImpl;
+import morozov.ru.oldmanfrostservice.repositories.WarehouseRepoImpl;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.DoneListRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.GiftTypeRepo;
 import morozov.ru.oldmanfrostservice.repositories.interfaces.WaitingListRepo;
@@ -23,7 +23,7 @@ public class AppConfig {
 
     @Bean
     public DoneListRepo doneListRepo() {
-        return new DoneListImpl();
+        return new DoneListRepoImpl();
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class AppConfig {
 
     @Bean
     public WarehouseRepo warehouseRepo() {
-        return new WarehouseImpl();
+        return new WarehouseRepoImpl();
     }
 
     @Bean

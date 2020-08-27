@@ -8,7 +8,7 @@ import java.util.Objects;
 public class GiftType {
 
     @Id
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String typeName;
 
     public GiftType() {

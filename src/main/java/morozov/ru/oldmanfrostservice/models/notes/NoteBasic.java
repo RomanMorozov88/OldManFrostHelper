@@ -1,7 +1,5 @@
 package morozov.ru.oldmanfrostservice.models.notes;
 
-import com.sun.istack.NotNull;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -11,14 +9,11 @@ public class NoteBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "kinder_name")
-    @NotNull
+    @Column(name = "kinder_name", nullable = false)
     private String kinderName;
-    @Column(name = "kinder_middle_name")
-    @NotNull
+    @Column(name = "kinder_middle_name", nullable = false)
     private String kinderMiddleName;
-    @Column(name = "kinder_last_name")
-    @NotNull
+    @Column(name = "kinder_last_name", nullable = false)
     private String kinderLastName;
 
     public NoteBasic() {

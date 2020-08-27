@@ -11,8 +11,7 @@ import java.util.Objects;
 public class NoteOfDone extends NoteBasic {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(referencedColumnName = "id")
-    @NotNull
+    @JoinColumn(referencedColumnName = "id", nullable = false)
     private Gift gift;
 
     public NoteOfDone() {

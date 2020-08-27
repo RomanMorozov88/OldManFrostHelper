@@ -11,8 +11,7 @@ import java.util.Objects;
 public class NoteOfWaiting extends NoteBasic{
 
     @ManyToOne
-    @JoinColumn(name = "type", referencedColumnName = "type")
-    @NotNull
+    @JoinColumn(name = "type", referencedColumnName = "type", nullable = false)
     private GiftType type;
 
     public NoteOfWaiting() {
